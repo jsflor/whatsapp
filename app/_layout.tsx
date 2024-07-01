@@ -1,9 +1,12 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
+import { Stack, useRouter, useSegments } from "expo-router";
+import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
+import * as SecureStore from "expo-secure-store";
 import "react-native-reanimated";
+import { View } from "react-native";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -13,7 +16,37 @@ export {
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
-export default function RootLayout() {
+const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
+
+if (!publishableKey) {
+  throw new Error(
+    "Missing Publishable Key. Please set EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY in your .env"
+  );
+}
+
+// Cache Clerk JWT
+const tokenCache = {
+  async getToken(key: string) {
+    try {
+      return SecureStore.getItemAsync(key);
+    } catch (error) {
+      return null;
+    }
+  },
+  async saveToken(key: string, value: string) {
+    try {
+      return SecureStore.setItemAsync(key, value);
+    } catch (error) {
+      return;
+    }
+  },
+};
+
+function RootLayout() {
+  const router = useRouter();
+  const segments = useSegments();
+  const { isSignedIn, isLoaded } = useAuth();
+
   const [loaded, error] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
     ...FontAwesome.font,
@@ -30,8 +63,19 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
-  if (!loaded) {
-    return null;
+  useEffect(() => {
+    if (!isLoaded) return;
+    const isInTabsGroup = segments[0] === "(tabs)";
+
+    if (isSignedIn && !isInTabsGroup) {
+      router.replace("/(tabs)/chats");
+    } else if (!isSignedIn) {
+      router.replace("/");
+    }
+  }, [isSignedIn]);
+
+  if (!loaded || !isLoaded) {
+    return <View />;
   }
 
   return <RootLayoutNav />;
@@ -56,5 +100,13 @@ function RootLayoutNav() {
         }}
       />
     </Stack>
+  );
+}
+
+export default function EntryPoint() {
+  return (
+    <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
+      <RootLayout />
+    </ClerkProvider>
   );
 }
