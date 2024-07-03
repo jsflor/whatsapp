@@ -68,6 +68,7 @@ export default function Layout() {
           name="settings"
           options={{
             title: "Settings",
+            headerShown: false,
             tabBarIcon: ({ size, color }) => (
               <Ionicons size={size} color={color} name="cog" />
             ),
