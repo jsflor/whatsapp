@@ -12,7 +12,7 @@ export default function Layout() {
           headerTitle: "Calls",
           headerLargeTitle: true,
           headerShadowVisible: false,
-          // headerBlurEffect: "regular",
+          headerBlurEffect: "regular",
           headerStyle: { backgroundColor: Colors.background },
           headerSearchBarOptions: {
             placeholder: "Search",
