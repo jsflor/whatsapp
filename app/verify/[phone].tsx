@@ -60,6 +60,7 @@ export default function Page() {
 
   const resendCode = async () => {
     try {
+      console.log("🚀 ~ resendCode ~ isSignIn:", isSignIn);
       if (isSignIn === "true") {
         const { supportedFirstFactors } = await signIn!.create({
           identifier: phone as string,

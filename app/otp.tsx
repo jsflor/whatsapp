@@ -54,43 +54,54 @@ export default function Page() {
   };
 
   const sendOTP = async () => {
+    console.log("sendOTP", phoneNumber);
     setLoading(true);
+
     try {
-      console.log("🚀 ~ sendOTP ~ phoneNumber:", phoneNumber);
-      signUp?.create({ phoneNumber });
-      signUp?.preparePhoneNumberVerification();
+      await signUp!.create({
+        phoneNumber,
+      });
+      console.log("🚀 ~ sendOTP ~ createdSessionId:", signUp?.createdSessionId);
+
+      signUp!.preparePhoneNumberVerification();
+
       router.push(`/verify/${phoneNumber}`);
     } catch (err) {
-      console.warn("🚀 ~ sendOTP ~ err:", err);
+      console.log("error", JSON.stringify(err, null, 2));
+
       if (isClerkAPIResponseError(err)) {
         if (err.errors[0].code === "form_identifier_exists") {
-          console.log("🚀 ~ sendOTP ~ error:", "user exists");
+          // User signed up before
+          console.log("User signed up before");
           await trySignIn();
         } else {
+          setLoading(false);
           Alert.alert("Error", err.errors[0].message);
         }
       }
-    } finally {
-      setLoading(false);
     }
   };
 
   const trySignIn = async () => {
-    const res = await signIn?.create({ identifier: phoneNumber });
-    console.log("🚀 ~ trySignIn ~ phoneNumber:", phoneNumber);
+    console.log("trySignIn", phoneNumber);
 
-    const firstPhoneFactor: any = res?.supportedFirstFactors.find(
-      (factor) => factor.strategy === "phone_code"
-    );
+    const { supportedFirstFactors } = await signIn!.create({
+      identifier: phoneNumber,
+    });
+
+    const firstPhoneFactor: any = supportedFirstFactors.find((factor: any) => {
+      return factor.strategy === "phone_code";
+    });
 
     const { phoneNumberId } = firstPhoneFactor;
 
-    await signIn?.prepareFirstFactor({
+    await signIn!.prepareFirstFactor({
       strategy: "phone_code",
       phoneNumberId,
     });
 
     router.push(`/verify/${phoneNumber}?isSignIn=true`);
+    setLoading(false);
   };
 
   return (

@@ -68,7 +68,7 @@ function RootLayout() {
     const isInTabsGroup = segments[0] === "(tabs)";
 
     if (isSignedIn && !isInTabsGroup) {
-      router.replace("/(tabs)/chats");
+      router.replace("/(tabs)/calls");
     } else if (!isSignedIn) {
       router.replace("/");
     }

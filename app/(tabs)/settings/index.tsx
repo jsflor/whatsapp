@@ -148,7 +148,7 @@ export default function Page() {
           />
         </View>
 
-        <TouchableOpacity onPress={() => signOut}>
+        <TouchableOpacity onPress={() => signOut()}>
           <Text
             style={{
               color: Colors.primary,

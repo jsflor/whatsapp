@@ -37,6 +37,7 @@ export default function Layout() {
           name="calls"
           options={{
             title: "Calls",
+            headerShown: false,
             tabBarIcon: ({ size, color }) => (
               <MaterialCommunityIcons
                 size={size}
