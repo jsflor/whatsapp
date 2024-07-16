@@ -60,6 +60,7 @@ export default function Layout() {
           name="chats"
           options={{
             title: "Chats",
+            headerShown: false,
             tabBarIcon: ({ size, color }) => (
               <Ionicons size={size} color={color} name="chatbubbles" />
             ),
