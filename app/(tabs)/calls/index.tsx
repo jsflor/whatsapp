@@ -8,10 +8,11 @@ import {
   View,
   StyleSheet,
   Image,
+  Platform,
 } from "react-native";
 import calls from "@/assets/data/calls.json";
 import { defaultStyles } from "@/constants/Styles";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { format } from "date-fns";
 import { SegmentedControl } from "@/components/SegmentedControl";
 import Animated, {
@@ -49,6 +50,55 @@ export default function Page() {
     setItems(items.filter((i) => i.id !== item.id));
   };
 
+  const headerTitle = Platform.select({
+    ios: () => (
+      <SegmentedControl
+        options={["All", "Missed"]}
+        selectedOption={selectedOption}
+        onOptionPress={setSelectedOption}
+      />
+    ),
+    android: undefined,
+  });
+
+  const headerLeft = Platform.select({
+    ios: () => (
+      <TouchableOpacity onPress={onEdit}>
+        <Text style={{ color: Colors.primary, fontSize: 18 }}>
+          {isEditing ? "Done" : "Edit"}
+        </Text>
+      </TouchableOpacity>
+    ),
+    android: undefined,
+  });
+
+  const headerRight = Platform.select({
+    android: () => (
+      <View
+        style={{
+          flexDirection: "row",
+          gap: Platform.select({ android: 20, ios: 30 }),
+        }}
+      >
+        <TouchableOpacity>
+          <Ionicons name="call-outline" color={Colors.primary} size={30} />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={onEdit}>
+          {isEditing ? (
+            <MaterialIcons name="done" color={Colors.primary} size={30} />
+          ) : (
+            <MaterialIcons name="edit-note" color={Colors.primary} size={30} />
+          )}
+        </TouchableOpacity>
+      </View>
+    ),
+    ios: () => (
+      <TouchableOpacity>
+        <Ionicons name="call-outline" color={Colors.primary} size={30} />
+      </TouchableOpacity>
+    ),
+  });
+
   useEffect(() => {
     if (selectedOption === "All") {
       setItems(calls);
@@ -62,20 +112,9 @@ export default function Page() {
       <Stack.Screen
         options={{
           title: "Calls",
-          headerTitle: () => (
-            <SegmentedControl
-              options={["All", "Missed"]}
-              selectedOption={selectedOption}
-              onOptionPress={setSelectedOption}
-            />
-          ),
-          headerLeft: () => (
-            <TouchableOpacity onPress={onEdit}>
-              <Text style={{ color: Colors.primary, fontSize: 18 }}>
-                {isEditing ? "Done" : "Edit"}
-              </Text>
-            </TouchableOpacity>
-          ),
+          headerTitle,
+          headerLeft,
+          headerRight,
         }}
       />
       <ScrollView

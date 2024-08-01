@@ -1,7 +1,7 @@
 import Colors from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
 import { Link, Stack } from "expo-router";
-import { Image, Text, TouchableOpacity, View } from "react-native";
+import { Image, Platform, Text, TouchableOpacity, View } from "react-native";
 
 export default function Layout() {
   return (
@@ -23,11 +23,20 @@ export default function Layout() {
                 name="ellipsis-horizontal-circle-outline"
                 color={Colors.primary}
                 size={30}
+                style={Platform.select({
+                  android: { marginRight: 10 },
+                  ios: {},
+                })}
               />
             </TouchableOpacity>
           ),
           headerRight: () => (
-            <View style={{ flexDirection: "row", gap: 30 }}>
+            <View
+              style={{
+                flexDirection: "row",
+                gap: Platform.select({ android: 20, ios: 30 }),
+              }}
+            >
               <TouchableOpacity>
                 <Ionicons
                   name="camera-outline"

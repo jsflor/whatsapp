@@ -1,7 +1,5 @@
 import Colors from "@/constants/Colors";
-import { Ionicons } from "@expo/vector-icons";
 import { Stack } from "expo-router";
-import { TouchableOpacity } from "react-native";
 
 export default function Layout() {
   return (
@@ -18,11 +16,6 @@ export default function Layout() {
           headerSearchBarOptions: {
             placeholder: "Search",
           },
-          headerRight: () => (
-            <TouchableOpacity>
-              <Ionicons name="call-outline" color={Colors.primary} size={30} />
-            </TouchableOpacity>
-          ),
         }}
       />
     </Stack>
